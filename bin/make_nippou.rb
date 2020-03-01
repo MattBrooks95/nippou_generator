@@ -40,7 +40,6 @@ OptionParser.new do |options|
 	end
 end.parse!
 
-puts "from main: #{commandLineOptions.getConfigFilePath()}"
 commandLineOptions.parseConfigFile();
 
 configFileOptions = NippouOptions.new();

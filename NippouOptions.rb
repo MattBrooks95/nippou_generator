@@ -31,6 +31,7 @@ class NippouOptions
 
 		if(!@configFilePath.nil?)
 			puts "parsing at path:#{@configFilePath}"
+			parser.parse(@configFilePath)
 		elsif(!@configFileName.nil?)
 			puts "parsing file with name:#{@configFileName}"
 		else
