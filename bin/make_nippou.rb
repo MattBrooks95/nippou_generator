@@ -12,7 +12,6 @@ commandLineOptions = NippouOptions.new();
 
 OptionParser.new do |options|
 	options.banner = 'Usage: main.rb [options]'
-	#may need '--fn firstName' actually
 	options.on('-fn firstName', '--first firstName', 'first name') do |firstName|
 		puts 'saving name'
 		commandLineOptions.setFirstName(toUtf8(firstName))
