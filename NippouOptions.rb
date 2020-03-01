@@ -9,14 +9,14 @@ class NippouOptions
 			puts "#{__METHOD__} given incompatible object!"
 		end
 
-		@configFilePath      = otherOptions.configFilePath
-		@firstName           = otherOptions.firstName
-		@lastName            = otherOptions.lastName
-		@contentsFilePath    = otherOptions.contentsFilePath
-		@postMessage         = otherOptions.postMessage
-		@lastMessageFormal   = otherOptions.lastMessageFormal
-		@lastMessagePersonal = otherOptions.lastMessagePersonal
-		@contentSubSections  = otherOptions.contentSubSections
+		@configFilePath      = otherOptions.getConfigFilePath()
+		@firstName           = otherOptions.getFirstName()
+		@lastName            = otherOptions.getLastName()
+		@contentsFilePath    = otherOptions.getContentsFilePath()
+		@postMessage         = otherOptions.getPostMessage()
+		@lastMessageFormal   = otherOptions.getLastMessageFormal()
+		@lastMessagePersonal = otherOptions.getLastMessagePersonal()
+		@contentSubSections  = otherOptions.getContentSubSections()
 	end
 
 	def getInspectString()
