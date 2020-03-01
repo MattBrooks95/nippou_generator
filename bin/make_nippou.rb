@@ -1,7 +1,8 @@
 #!/C:\Ruby26-x64\bin\ruby
 require 'optparse'
+require 'pp'
 
-require_relative '../NippouGenerator'
+require_relative '../Nippou'
 require_relative '../NippouOptions'
 
 def toUtf8(someString)
@@ -33,27 +34,27 @@ OptionParser.new do |options|
 		commandLineOptions.setConfigFilePath(toUtf8(configFilePath))
 	end
 
-	options.on('-n CONFIGFILENAME', '--fileName CONFIGFILENAME', 'Name of config file in PROJECTROOT/config/userconfigs') do |contentsFileName|
+	options.on('-n CONFIGFILENAME', '--fileName CONFIGFILENAME', 'Name of config file in PROJECTROOT/config/userconfigs') do |configFileName|
 		puts 'CONFIG FILE NAME UNIMPLEMENTED';
+		commandLineOptions.setConfigFileName(configFileName)
 	end
 end.parse!
 
-commandLineOptions.printInspect()
+puts "from main: #{commandLineOptions.getConfigFilePath()}"
+commandLineOptions.parseConfigFile();
 
 configFileOptions = NippouOptions.new();
-configFileOptions.setFromOther(commandLineOptions);
+# configFileOptions.setFromOther(commandLineOptions);
 
-[configFileOptions.getFirstName(), configFileOptions.getLastName(), configFileOptions.getContentsFilePath()].each do |option|
-	if(option.nil?)
-		raise 'Missing parameters! --first firstName --last lastName --file filePath are all necessary! Or, they need to be in the config file!'
-	end
-end
+# [configFileOptions.getFirstName(), configFileOptions.getLastName(), configFileOptions.getContentsFilePath()].each do |option|
+# 	if(option.nil?)
+# 		raise 'Missing parameters! --first firstName --last lastName --file filePath are all necessary! Or, they need to be in the config file!'
+# 	end
+# end
 
-nippouGenerator = NippouGenerator.new()
+# nippouGenerator = NippouGenerator.new()
 
-
-
-[configFileOptionsObject, nippouGenerator].each do |object|
+[commandLineOptions, configFileOptions].each do |object|
 	object.printInspect()
 end
 

@@ -1,3 +1,5 @@
+require_relative 'FileParser'
+
 class NippouOptions
 	def NippouOptions()
 		puts "constructed nippou options"
@@ -10,6 +12,7 @@ class NippouOptions
 		end
 
 		@configFilePath      = otherOptions.getConfigFilePath()
+		@configFileName      = otherOptions.getConfigFileName()
 		@firstName           = otherOptions.getFirstName()
 		@lastName            = otherOptions.getLastName()
 		@contentsFilePath    = otherOptions.getContentsFilePath()
@@ -19,24 +22,38 @@ class NippouOptions
 		@contentSubSections  = otherOptions.getContentSubSections()
 	end
 
-	def getInspectString()
-		return self.inspect;
-	end
-
 	def printInspect()
-		puts(getInspectString())
+		pp(self)
 	end
 
-	def fillFromJson(jsonFilePath)
+	def parseConfigFile()
+		parser = FileParser.new()
 
+		if(!@configFilePath.nil?)
+			puts "parsing at path:#{@configFilePath}"
+		elsif(!@configFileName.nil?)
+			puts "parsing file with name:#{@configFileName}"
+		else
+			puts 'No config file specified'
+		end
 	end
 
 	def setConfigFilePath(configFilePath)
+		puts "setting config file path! #{configFilePath}"
 		@configFilePath = configFilePath
+		puts "class: #{@configFilePath}"
 	end
 
 	def getConfigFilePath()
 		return @configFilePath
+	end
+
+	def getConfigFileName()
+		return @configFileName
+	end
+
+	def setConfigFileName(configFileName)
+		@configFileName = configFileName
 	end
 
 	def setFirstName(firstName)
