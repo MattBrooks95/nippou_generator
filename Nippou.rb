@@ -105,7 +105,12 @@ class Nippou
 	end
 
 	def getFullName()
-		return "#{@lastName}・#{@firstName}"
+		nameParts = [@lastName]
+		if(@middleName)
+			nameParts.push(@middleName)
+		end
+		nameParts.push(@firstName)
+		return nameParts.join(' ')
 	end
 
 	def setDate(newDate = nil)
@@ -146,6 +151,10 @@ class Nippou
 		].join(Newline)
 	end
 
+	def buildConclusion()
+		return @conclusion + @postMessage
+	end
+
 	def buildRecipients()
 		return @addresses.join(AddressSeparator)
 	end
@@ -155,7 +164,16 @@ class Nippou
 	end
 
 	def buildSubject()
-		return "#{getNippouLabel()}#{getDateFormatted()} #{getFullName()}"
+		subjectLineElements = [@subjectLineLabel]
+		if(@putDateInSubject)
+			subjectLineElements.push(getDateFormatted())
+		end
+		if(@fullNameOverride)
+			subjectLineElements.push(@fullNameOverride)
+		else
+			subjectLineElements.push(getFullName())
+		end
+		return subjectLineElements.join()
 	end
 
 	def makeHeader(firstPart, secondPart = " 特になし")
