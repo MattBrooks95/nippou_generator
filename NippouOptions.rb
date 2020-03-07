@@ -1,8 +1,9 @@
 require_relative 'FileParser'
 
 class NippouOptions
-	def NippouOptions()
+	def NippouOptions(commandLineOptions)
 		puts "constructed nippou options"
+		@commandLineOptions = commandLineOptions
 	end
 
 	# gotta be a better way to do this
@@ -16,7 +17,6 @@ class NippouOptions
 		@firstName           = otherOptions.getFirstName()
 		@lastName            = otherOptions.getLastName()
 		@contentsFilePath    = otherOptions.getContentsFilePath()
-		@postMessage         = otherOptions.getPostMessage()
 		@lastMessageFormal   = otherOptions.getLastMessageFormal()
 		@lastMessagePersonal = otherOptions.getLastMessagePersonal()
 		@contentSubSections  = otherOptions.getContentSubSections()
@@ -24,19 +24,6 @@ class NippouOptions
 
 	def printInspect()
 		pp(self)
-	end
-
-	def parseConfigFile()
-		parser = FileParser.new()
-
-		if(!@configFilePath.nil?)
-			puts "parsing at path:#{@configFilePath}"
-			parser.parse(@configFilePath)
-		elsif(!@configFileName.nil?)
-			puts "parsing file with name:#{@configFileName}"
-		else
-			puts 'No config file specified'
-		end
 	end
 
 	def setConfigFilePath(configFilePath)

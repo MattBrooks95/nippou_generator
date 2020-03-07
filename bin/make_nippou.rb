@@ -1,6 +1,5 @@
 #!/C:\Ruby26-x64\bin\ruby
 require 'optparse'
-require 'pp'
 
 require_relative '../Nippou'
 require_relative '../NippouOptions'
@@ -9,7 +8,7 @@ def toUtf8(someString)
 	return someString.encode('UTF-8')
 end
 
-commandLineOptions = NippouOptions.new();
+commandLineOptions = NippouOptions.new()
 
 OptionParser.new do |options|
 	options.banner = 'Usage: main.rb [options]'
@@ -40,33 +39,11 @@ OptionParser.new do |options|
 	end
 end.parse!
 
-commandLineOptions.parseConfigFile();
-
-configFileOptions = NippouOptions.new();
-# configFileOptions.setFromOther(commandLineOptions);
-
-# [configFileOptions.getFirstName(), configFileOptions.getLastName(), configFileOptions.getContentsFilePath()].each do |option|
-# 	if(option.nil?)
-# 		raise 'Missing parameters! --first firstName --last lastName --file filePath are all necessary! Or, they need to be in the config file!'
-# 	end
-# end
-
-# nippouGenerator = NippouGenerator.new()
-
-[commandLineOptions, configFileOptions].each do |object|
-	object.printInspect()
-end
-
-# def readFile(contentsFile)
-# 	return IO.read(contentsFile, encoding: 'UTF-8')
-# end
-
+nippou = Nippou.new(commandLineOptions)
+nippou.prepare()
+nippou.output()
 # bodyContents = @contentsFile.nil? ? '' : readFile(@contentsFile)
 # nippou = nippouGenerator.getNippou(@firstName, @lastName)
-
-# if(!@postMessage.nil?)
-# 	nippou.setPostMessage(@postMessage)
-# end
 
 # if(!@workCodeLine.nil?)
 # 	nippou.setWorkCodeLine(@workCodeLine)

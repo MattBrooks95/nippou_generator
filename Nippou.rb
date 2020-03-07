@@ -1,19 +1,107 @@
 require 'date'
+require 'pp'
+
+
+require_relative './NippouOptions'
 
 class Nippou
-	def initialize(firstName,lastName,ps = nil)
-		@firstName = firstName
-		@lastName = lastName
-		if(!ps.nil?)
-			@ps = ps
+	OPTION_ADDRESSES             = "addresses"
+	OPTION_FIRST_NAME            = "firstName"
+	OPTION_LAST_NAME             = "lastName"
+	OPTION_MIDDLE_NAME           = "middleName"
+	OPTION_FULL_NAME_OVERRIDE    = "fullNameOverride"
+	OPTION_INTRODUCTION_TEMPLATE = "introductionTemplate"
+	OPTION_SUBJECT_LINE_LABEL    = "subjectLineLabel"
+	OPTION_PUT_DATE_IN_SUBJECT   = "putDateInSubject"
+	OPTION_INTRODUCTION          = "introduction"
+	OPTION_MAIN_SECTION          = "mainSection"
+	OPTION_BODY_SUBSECTIONS      = "bodySubsections"
+	OPTION_CONCLUSION            = "conclusion"
+	OPTION_POST_MESSAGE          = "postMessage"
+
+	@addresses
+	@firstName
+	@lastName
+	@middleName
+	@fullNameOverride
+	@introductionTemplate
+	@subjectLineLabel
+	@putDateInSubject
+	@introduction
+	@mainSection
+	@bodySubsections
+	@conclusion
+	@postMessage
+
+	def initialize(nippouOptions)
+		puts "in constructor"
+		pp(nippouOptions)
+		@configFilePath = nippouOptions.getConfigFilePath()
+		@contentsFilePath = nippouOptions.getContentsFilePath()
+		@commandLineOverrides = nippouOptions
+		parseConfigFile()
+		loadBodyContents(nippouOptions.getContentsFilePath())
+	end
+
+	def loadBodyContents(filePath)
+		puts "loading main body from #{filePath}"
+
+		@mainSection = IO.read(filePath, encoding: 'UTF-8')
+		puts @mainSection
+	end
+
+	def parseConfigFile()
+		puts "parsing the config file"
+		if(!@configFilePath.nil?)
+			puts "parsing at path:#{@configFilePath}"
+			parseAtPath(@configFilePath)
+		elsif(!@configFileName.nil?)
+			puts "parsing file with name:#{@configFileName}"
+			parseAtPath("./config/user_configs/#{@configFileName}")
+		else
+			puts 'No config file specified'
 		end
+	end
 
-		# @subjectLabel = ""
+	def parseAtPath(completePath)
+		parser = FileParser.new()
+		data = parser.parse(File.path(completePath));
+		# puts data;
+		data.each do |key, value|
+			puts "key:#{key} value:#{value}"
+			filter(key, value)
+		end
+	end
 
-		@emailAddresses = [
-		]
-
-		@preparedNippo = nil
+	def filter(key, value)
+		case(key)
+		when OPTION_ADDRESSES
+			@addresses = value
+		when OPTION_FIRST_NAME
+			@firstName = @commandLineOverrides.getFirstName() || value
+		when OPTION_LAST_NAME
+			@lastName = @commandLineOverrides.getLastName() || value
+		when OPTION_MIDDLE_NAME
+			@middleName = value
+		when OPTION_FULL_NAME_OVERRIDE
+			@fullNameOverride = value
+		when OPTION_INTRODUCTION_TEMPLATE
+			@introductionTemplate = value
+		when OPTION_SUBJECT_LINE_LABEL
+			@subjectLineLabel = value
+		when OPTION_PUT_DATE_IN_SUBJECT
+			@putDateInSubject = value
+		when OPTION_INTRODUCTION
+			@introduction = value
+		when OPTION_MAIN_SECTION
+			@mainSection = value
+		when OPTION_BODY_SUBSECTIONS
+			@bodySubsections = value
+		when OPTION_CONCLUSION
+			@conclusion = @commandLineOverrides.getLastMessageFormal() || value
+		when OPTION_POST_MESSAGE
+			@postMessage = @commandLineOverrides.getLastMessagePersonal() || value
+		end
 	end
 
 	def getFullName()
@@ -44,17 +132,29 @@ class Nippou
 		return @firstName
 	end
 
-	def prepare(bodyContents='')
-		newline = "\n"
-		indentNewline = "#{newline}\t"
-		@preparedNippou = "recipients:#{indentNewline}#{@emailAddresses.join(' ')}#{newline}subject:#{indentNewline}#{getSubject()}#{newline}body:#{newline}#{buildBody(bodyContents)}"
+	AddressSeparator = ','
+	Newline = "\n"
+	IndentNewline = "#{Newline}\t"
+
+	def prepare()
+		# @preparedNippou = "recipients:#{indentNewline}#{@emailAddresses.join(' ')}#{newline}subject:#{indentNewline}#{getSubject()}#{newline}body:#{newline}#{buildBody(bodyContents)}"
+		@preparedNippou = [
+			buildRecipients(),
+			buildSubject(),
+			buildBody(),
+			buildConclusion()
+		].join(Newline)
+	end
+
+	def buildRecipients()
+		return @addresses.join(AddressSeparator)
 	end
 
 	def getPreparedNippou()
 		return @preparedNippou
 	end
 
-	def getSubject()
+	def buildSubject()
 		return "#{getNippouLabel()}#{getDateFormatted()} #{getFullName()}"
 	end
 
