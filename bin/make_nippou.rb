@@ -36,6 +36,10 @@ OptionParser.new do |options|
 		puts 'CONFIG FILE NAME UNIMPLEMENTED';
 		commandLineOptions.setConfigFileName(configFileName)
 	end
+
+	options.on('-w WORKCODELINE', '--workCodeLine') do |workCodeLine|
+		commandLineOptions.setWorkCodeLine(workCodeLine)
+	end
 end.parse!
 
 nippou = Nippou.new(commandLineOptions)
@@ -43,10 +47,6 @@ nippou.prepare()
 nippou.output()
 # bodyContents = @contentsFile.nil? ? '' : readFile(@contentsFile)
 # nippou = nippouGenerator.getNippou(@firstName, @lastName)
-
-# if(!@workCodeLine.nil?)
-# 	nippou.setWorkCodeLine(@workCodeLine)
-# end
 
 # nippou.prepare(bodyContents)
 # nippou.output()

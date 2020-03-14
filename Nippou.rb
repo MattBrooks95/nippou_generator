@@ -144,7 +144,9 @@ class Nippou
 	def prepare()
 		@preparedNippou = [
 			buildRecipients(),
+			"",
 			buildSubject(),
+			"",
 			buildBody(),
 			buildConclusion()
 		].join(NEWLINE)
@@ -199,32 +201,51 @@ class Nippou
 	end
 
 	def buildBody()
-		namePart = ""
-		workCodeLine = @workCodeLine || ""
-		firstPartContents = @mainSection
-		bodyContents = [
-			namePart,
-			workCodeLine,
-			firstPartContents,
-		]
+		bodyContents = []
+		# namePart = ""
+		if(definedNonEmpty(@workCodeLine))
+			bodyContents.push(@workCodeLine)
+		end
 
-		@bodySubsections.each do |subsection|
-			header = subsection['header']
-			content = subsection['content']
-			bodyContents.push(makeHeader(header))
-			if(!content.nil? && content != '')
-				bodyContents.push(subsection.content)
+		if(!@mainSection.nil?)
+			if(@workCodeLine)
+				bodyContents.push(@workCodeLine)
+			else
+				bodyContents.push(@mainSection['header'])
+			end
+			# bodyContents.push(@mainSection['header'])
+			# bodyContents.push(@mainSection['content'])
+		end
+
+		if(!@bodySubsections.nil?)
+			@bodySubsections.each do |subsection|
+				header = subsection['header']
+				content = subsection['content']
+				bodyContents.push(makeHeader(header))
+				if(definedNonEmpty(bodyContents))
+					bodyContents.push(content)
+				end
 			end
 		end
 
-		farewell = ""
-		postMessage = @postMessage || '';
+		if(definedNonEmpty(@farewell))
+			bodyContents.push(@farewell)
+		end
+		# farewell = ""
 
-		bodyContents.push(farewell + postMessage)
+		if(definedNonEmpty(@postMessage))
+			bodyContents.push(@postMessage)
+		end
+
+		# bodyContents.push(farewell + postMessage)
 
 		separator = "\n\n"
 
 		return bodyContents.join(separator)
+	end
+
+	def definedNonEmpty(string)
+		return !string.nil? && string != ''
 	end
 
 	def getFooter()
