@@ -46,8 +46,7 @@ class Nippou
 	def loadBodyContents(filePath)
 		puts "loading main body from #{filePath}"
 
-		# @mainSection = IO.read(filePath, encoding: 'UTF-8')
-		@mainSection = IO.read(filePath)
+		@mainSection = IO.read(filePath, encoding: 'UTF-8')
 		puts @mainSection
 	end
 
