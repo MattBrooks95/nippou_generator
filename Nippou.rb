@@ -46,7 +46,8 @@ class Nippou
 	def loadBodyContents(filePath)
 		puts "loading main body from #{filePath}"
 
-		@mainSection = IO.read(filePath, encoding: 'UTF-8')
+		# @mainSection = IO.read(filePath, encoding: 'UTF-8')
+		@mainSection = IO.read(filePath)
 		puts @mainSection
 	end
 
@@ -143,6 +144,7 @@ class Nippou
 
 	def prepare()
 		# @preparedNippou = "recipients:#{indentNewline}#{@emailAddresses.join(' ')}#{newline}subject:#{indentNewline}#{getSubject()}#{newline}body:#{newline}#{buildBody(bodyContents)}"
+		puts "build body:" + (buildBody().inspect)
 		@preparedNippou = [
 			buildRecipients(),
 			buildSubject(),
@@ -152,10 +154,18 @@ class Nippou
 	end
 
 	def buildConclusion()
+		if(@conclusion.nil?)
+			return ''
+		end
+
 		return @conclusion + @postMessage
 	end
 
 	def buildRecipients()
+		if(@addresses.nil?)
+			return ''
+		end
+
 		return @addresses.join(AddressSeparator)
 	end
 
