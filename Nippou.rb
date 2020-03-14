@@ -34,7 +34,6 @@ class Nippou
 	@postMessage
 
 	def initialize(nippouOptions)
-		puts "in constructor"
 		pp(nippouOptions)
 		@configFilePath = nippouOptions.getConfigFilePath()
 		@contentsFilePath = nippouOptions.getContentsFilePath()
@@ -66,7 +65,6 @@ class Nippou
 	def parseAtPath(completePath)
 		parser = FileParser.new()
 		data = parser.parse(File.path(completePath));
-		# puts data;
 		data.each do |key, value|
 			puts "key:#{key} value:#{value}"
 			filter(key, value)
@@ -101,6 +99,8 @@ class Nippou
 			@conclusion = @commandLineOverrides.getLastMessageFormal() || value
 		when OPTION_POST_MESSAGE
 			@postMessage = @commandLineOverrides.getLastMessagePersonal() || value
+		else
+			puts "Key:#{key} didn't hit a case in the switch statement"
 		end
 	end
 
@@ -110,6 +110,7 @@ class Nippou
 			nameParts.push(@middleName)
 		end
 		nameParts.push(@firstName)
+		puts("name parts:", nameParts)
 		return nameParts.join(' ')
 	end
 
@@ -137,19 +138,17 @@ class Nippou
 		return @firstName
 	end
 
-	AddressSeparator = ','
-	Newline = "\n"
-	IndentNewline = "#{Newline}\t"
+	ADDRESS_SEPARATOR = ', '
+	NEWLINE = "\n"
+	INDENTNEWLINE = "#{NEWLINE}\t"
 
 	def prepare()
-		# @preparedNippou = "recipients:#{indentNewline}#{@emailAddresses.join(' ')}#{newline}subject:#{indentNewline}#{getSubject()}#{newline}body:#{newline}#{buildBody(bodyContents)}"
-		puts "build body:" + (buildBody().inspect)
 		@preparedNippou = [
 			buildRecipients(),
 			buildSubject(),
 			buildBody(),
 			buildConclusion()
-		].join(Newline)
+		].join(NEWLINE)
 	end
 
 	def buildConclusion()
@@ -165,7 +164,7 @@ class Nippou
 			return ''
 		end
 
-		return @addresses.join(AddressSeparator)
+		return @addresses.join(ADDRESS_SEPARATOR)
 	end
 
 	def getPreparedNippou()
@@ -174,15 +173,18 @@ class Nippou
 
 	def buildSubject()
 		subjectLineElements = [@subjectLineLabel]
+
 		if(@putDateInSubject)
 			subjectLineElements.push(getDateFormatted())
 		end
-		if(@fullNameOverride)
+
+		if(!@fullNameOverride.nil? && @fullNameOverride != '')
 			subjectLineElements.push(@fullNameOverride)
 		else
 			subjectLineElements.push(getFullName())
 		end
-		return subjectLineElements.join()
+
+		return subjectLineElements.join(' ')
 	end
 
 	def makeHeader(firstPart, secondPart = " 特になし")
@@ -197,25 +199,30 @@ class Nippou
 		@workCodeLine = workCodeLine
 	end
 
-	def buildBody(bodyContents='')
+	def buildBody()
 		namePart = ""
 		workCodeLine = @workCodeLine || ""
-		firstPartContents = bodyContents
-		secondPart = makeHeader("")
-		thirdPart = makeHeader("")
-		fourthPart = makeHeader("")
-		farewell = ""
-		postMessage = @postMessage || '';
-
+		firstPartContents = @mainSection
+		puts("main contents:", firstPartContents)
 		bodyContents = [
 			namePart,
 			workCodeLine,
 			firstPartContents,
-			secondPart,
-			thirdPart,
-			fourthPart,
-			farewell + postMessage
 		]
+
+		@bodySubsections.each do |subsection|
+			header = subsection['header']
+			content = subsection['content']
+			bodyContents.push(makeHeader(header))
+			if(!content.nil? && content != '')
+				bodyContents.push(subsection.content)
+			end
+		end
+
+		farewell = ""
+		postMessage = @postMessage || '';
+
+		bodyContents.push(farewell + postMessage)
 
 		separator = "\n\n"
 
