@@ -110,7 +110,6 @@ class Nippou
 			nameParts.push(@middleName)
 		end
 		nameParts.push(@firstName)
-		puts("name parts:", nameParts)
 		return nameParts.join(' ')
 	end
 
@@ -203,7 +202,6 @@ class Nippou
 		namePart = ""
 		workCodeLine = @workCodeLine || ""
 		firstPartContents = @mainSection
-		puts("main contents:", firstPartContents)
 		bodyContents = [
 			namePart,
 			workCodeLine,
