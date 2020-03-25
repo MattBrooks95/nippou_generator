@@ -10,7 +10,6 @@ class Nippou
 	OPTION_LAST_NAME             = "lastName"
 	OPTION_MIDDLE_NAME           = "middleName"
 	OPTION_FULL_NAME_OVERRIDE    = "fullNameOverride"
-	OPTION_INTRODUCTION_TEMPLATE = "introductionTemplate"
 	OPTION_SUBJECT_LINE_LABEL    = "subjectLineLabel"
 	OPTION_PUT_DATE_IN_SUBJECT   = "putDateInSubject"
 	OPTION_INTRODUCTION          = "introduction"
@@ -19,12 +18,14 @@ class Nippou
 	OPTION_CONCLUSION            = "conclusion"
 	OPTION_POST_MESSAGE          = "postMessage"
 
+	INTRODUCTION_TEMPLATE = "template"
+	INTRODUCTION_ARGUMENTS = "arguments"
+
 	@addresses
 	@firstName
 	@lastName
 	@middleName
 	@fullNameOverride
-	@introductionTemplate
 	@subjectLineLabel
 	@putDateInSubject
 	@introduction
@@ -83,8 +84,6 @@ class Nippou
 			@middleName = value
 		when OPTION_FULL_NAME_OVERRIDE
 			@fullNameOverride = value
-		when OPTION_INTRODUCTION_TEMPLATE
-			@introductionTemplate = value
 		when OPTION_SUBJECT_LINE_LABEL
 			@subjectLineLabel = value
 		when OPTION_PUT_DATE_IN_SUBJECT
@@ -147,9 +146,23 @@ class Nippou
 			"",
 			buildSubject(),
 			"",
+			buildIntroduction(),
+			"",
 			buildBody(),
 			buildConclusion()
 		].join(NEWLINE)
+	end
+
+	def buildIntroduction()
+		if(!defined(@introduction))
+			return
+		end
+
+		introductionTemplate = @introduction[INTRODUCTION_TEMPLATE]
+		introductionTemplateArguments = @introduction[INTRODUCTION_ARGUMENTS]
+
+		compiledIntroduction = introductionTemplate % introductionTemplateArguments
+		return compiledIntroduction
 	end
 
 	def buildConclusion()
@@ -213,8 +226,7 @@ class Nippou
 			else
 				bodyContents.push(@mainSection['header'])
 			end
-			# bodyContents.push(@mainSection['header'])
-			# bodyContents.push(@mainSection['content'])
+			bodyContents.push(@mainSection)
 		end
 
 		if(!@bodySubsections.nil?)
@@ -231,21 +243,22 @@ class Nippou
 		if(definedNonEmpty(@farewell))
 			bodyContents.push(@farewell)
 		end
-		# farewell = ""
 
 		if(definedNonEmpty(@postMessage))
 			bodyContents.push(@postMessage)
 		end
-
-		# bodyContents.push(farewell + postMessage)
 
 		separator = "\n\n"
 
 		return bodyContents.join(separator)
 	end
 
+	def defined(object)
+		return !object.nil?
+	end
+
 	def definedNonEmpty(string)
-		return !string.nil? && string != ''
+		return defined(string) && string != ''
 	end
 
 	def getFooter()
@@ -258,7 +271,6 @@ class Nippou
 			puts 'Need to call prepare nippo method first!'
 			return
 		end
-
 		puts preparedNippou
 	end
 end
