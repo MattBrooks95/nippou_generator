@@ -33,7 +33,6 @@ OptionParser.new do |options|
 	end
 
 	options.on('-n CONFIGFILENAME', '--fileName CONFIGFILENAME', 'Name of config file in PROJECTROOT/config/userconfigs') do |configFileName|
-		puts 'CONFIG FILE NAME UNIMPLEMENTED';
 		commandLineOptions.setConfigFileName(configFileName)
 	end
 
@@ -44,9 +43,5 @@ end.parse!
 
 nippou = Nippou.new(commandLineOptions)
 nippou.prepare()
+puts "\n\n\n"
 nippou.output()
-# bodyContents = @contentsFile.nil? ? '' : readFile(@contentsFile)
-# nippou = nippouGenerator.getNippou(@firstName, @lastName)
-
-# nippou.prepare(bodyContents)
-# nippou.output()

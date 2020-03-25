@@ -14,7 +14,12 @@ class Nippou
 	OPTION_PUT_DATE_IN_SUBJECT   = "putDateInSubject"
 	OPTION_INTRODUCTION          = "introduction"
 	OPTION_MAIN_SECTION          = "mainSection"
-	OPTION_BODY_SUBSECTIONS      = "bodySubsections"
+
+	OPTION_BODY_SUBSECTIONS             = "bodySubsections"
+	OPTION_BODY_SUBSECTIONS_HEADER      = 'header'
+	OPTION_BODY_SUBSECTIONS_SECOND_PART = 'headerSecondPart'
+	OPTION_BODY_SUBSECTIONS_CONTENT     = 'content'
+
 	OPTION_CONCLUSION            = "conclusion"
 	OPTION_POST_MESSAGE          = "postMessage"
 
@@ -35,7 +40,7 @@ class Nippou
 	@postMessage
 
 	def initialize(nippouOptions)
-		pp(nippouOptions)
+		# pp(nippouOptions)
 		@configFilePath = nippouOptions.getConfigFilePath()
 		@contentsFilePath = nippouOptions.getContentsFilePath()
 		@commandLineOverrides = nippouOptions
@@ -44,19 +49,19 @@ class Nippou
 	end
 
 	def loadBodyContents(filePath)
-		puts "loading main body from #{filePath}"
+		# puts "loading main body from #{filePath}"
 
 		@mainSection = IO.read(filePath, encoding: 'UTF-8')
-		puts @mainSection
+		# puts @mainSection
 	end
 
 	def parseConfigFile()
-		puts "parsing the config file"
+		# puts "parsing the config file"
 		if(!@configFilePath.nil?)
-			puts "parsing at path:#{@configFilePath}"
+			# puts "parsing at path:#{@configFilePath}"
 			parseAtPath(@configFilePath)
 		elsif(!@configFileName.nil?)
-			puts "parsing file with name:#{@configFileName}"
+			# puts "parsing file with name:#{@configFileName}"
 			parseAtPath("./config/user_configs/#{@configFileName}")
 		else
 			puts 'No config file specified'
@@ -67,7 +72,7 @@ class Nippou
 		parser = FileParser.new()
 		data = parser.parse(File.path(completePath));
 		data.each do |key, value|
-			puts "key:#{key} value:#{value}"
+			# puts "key:#{key} value:#{value}"
 			filter(key, value)
 		end
 	end
@@ -201,8 +206,12 @@ class Nippou
 		return subjectLineElements.join(' ')
 	end
 
-	def makeHeader(firstPart, secondPart = " 特になし")
-		return firstPart + secondPart
+	def makeHeader(firstPart, secondPart = "")
+		if(definedNonEmpty(firstPart))
+			return firstPart + secondPart
+		end
+
+		return ""
 	end
 
 	def setPostMessage(postMessage)
@@ -229,15 +238,8 @@ class Nippou
 			bodyContents.push(@mainSection)
 		end
 
-		if(!@bodySubsections.nil?)
-			@bodySubsections.each do |subsection|
-				header = subsection['header']
-				content = subsection['content']
-				bodyContents.push(makeHeader(header))
-				if(definedNonEmpty(bodyContents))
-					bodyContents.push(content)
-				end
-			end
+		if(defined(@bodySubsections))
+			processSubheaders(bodyContents)
 		end
 
 		if(definedNonEmpty(@farewell))
@@ -249,8 +251,20 @@ class Nippou
 		end
 
 		separator = "\n\n"
-
+		# puts bodyContents.join(separator)
 		return bodyContents.join(separator)
+	end
+
+	def processSubheaders(arrayToPushInto)
+		@bodySubsections.each do |subsection|
+			header     = subsection[OPTION_BODY_SUBSECTIONS_HEADER]
+			secondPart = subsection[OPTION_BODY_SUBSECTIONS_SECOND_PART]
+			content    = subsection[OPTION_BODY_SUBSECTIONS_CONTENT]
+			arrayToPushInto.push(makeHeader(header, secondPart))
+			if(definedNonEmpty(content))
+				arrayToPushInto.push(content)
+			end
+		end
 	end
 
 	def defined(object)

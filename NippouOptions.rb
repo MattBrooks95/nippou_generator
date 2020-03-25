@@ -2,7 +2,6 @@ require_relative 'FileParser'
 
 class NippouOptions
 	def NippouOptions(commandLineOptions)
-		puts "constructed nippou options"
 		@commandLineOptions = commandLineOptions
 	end
 
@@ -27,9 +26,7 @@ class NippouOptions
 	end
 
 	def setConfigFilePath(configFilePath)
-		puts "setting config file path! #{configFilePath}"
 		@configFilePath = configFilePath
-		puts "class: #{@configFilePath}"
 	end
 
 	def getConfigFilePath()
