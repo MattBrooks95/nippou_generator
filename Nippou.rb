@@ -14,6 +14,7 @@ class Nippou
 	OPTION_PUT_DATE_IN_SUBJECT   = "putDateInSubject"
 	OPTION_INTRODUCTION          = "introduction"
 	OPTION_MAIN_SECTION          = "mainSection"
+	OPTION_WORK_CODE_LINE        = "workCodeLine"
 
 	OPTION_BODY_SUBSECTIONS             = "bodySubsections"
 	OPTION_BODY_SUBSECTIONS_HEADER      = 'header'
@@ -38,6 +39,7 @@ class Nippou
 	@bodySubsections
 	@conclusion
 	@postMessage
+	@workCodeLine
 
 	def initialize(nippouOptions)
 		# pp(nippouOptions)
@@ -51,7 +53,7 @@ class Nippou
 	def loadBodyContents(filePath)
 		# puts "loading main body from #{filePath}"
 
-		@mainSection = IO.read(filePath, encoding: 'UTF-8')
+		@mainSection['content'] = IO.read(filePath, encoding: 'UTF-8')
 		# puts @mainSection
 	end
 
@@ -103,6 +105,8 @@ class Nippou
 			@conclusion = @commandLineOverrides.getLastMessageFormal() || value
 		when OPTION_POST_MESSAGE
 			@postMessage = @commandLineOverrides.getLastMessagePersonal() || value
+		when OPTION_WORK_CODE_LINE
+			@workCodeLine = value
 		else
 			puts "Key:#{key} didn't hit a case in the switch statement"
 		end
@@ -230,12 +234,13 @@ class Nippou
 		end
 
 		if(!@mainSection.nil?)
-			if(@workCodeLine)
+			if(definedNonEmpty(@workCodeLine))
 				bodyContents.push(@workCodeLine)
 			else
 				bodyContents.push(@mainSection['header'])
+				puts "pushing: #{@mainSection['header']}"
 			end
-			bodyContents.push(@mainSection)
+			bodyContents.push(@mainSection['content'])
 		end
 
 		if(defined(@bodySubsections))
