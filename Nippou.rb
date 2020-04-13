@@ -47,7 +47,9 @@ class Nippou
 		@contentsFilePath = nippouOptions.getContentsFilePath()
 		@commandLineOverrides = nippouOptions
 		parseConfigFile()
-		loadBodyContents(nippouOptions.getContentsFilePath())
+		if(!nippouOptions.getContentsFilePath().nil?)
+			loadBodyContents(nippouOptions.getContentsFilePath())
+		end
 	end
 
 	def loadBodyContents(filePath)
