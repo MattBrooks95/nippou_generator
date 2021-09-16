@@ -2,3 +2,4 @@ config/user_configs/
 *.sublime-workspace
 *.sublime-project
 output.txt
+*.swp
