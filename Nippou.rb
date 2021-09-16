@@ -165,7 +165,8 @@ class Nippou
 	end
 
 	def buildIntroduction()
-		if(!defined(@introduction))
+      if(!defined(@introduction) || @introduction[INTRODUCTION_TEMPLATE].nil? || @introduction[INTRODUCTION_ARGUMENTS].nil?)
+            puts('something wasn\'t defined in build introductions')
 			return
 		end
 
