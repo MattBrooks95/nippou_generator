@@ -3,3 +3,4 @@ config/user_configs/
 *.sublime-project
 output.txt
 *.swp
+/dist-newstyle
