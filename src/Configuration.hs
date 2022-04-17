@@ -67,6 +67,10 @@ getConfiguration = do
 	--	Just configDir -> print $ "config dir:" ++ configDir
 	--	Nothing -> print "config dir was not found"
 	--environmentVariablesList <- sequence (map getEnvironmentVariable targetEnvironmentVariables)
+	--at first I thought using zip to pair up the environment variables with the hard-coded strings that I specified
+	--so that I could make a map seemed kind of kludgy, but the result of looking up the environment variable
+	--is fundamentally different than the strings that I specified because IO is involved
+	--also it says that I could of used mapM
 	environmentVariablesResults <- sequence (map getEnvironmentVariable targetEnvironmentVariables)
 	let environmentVariablesList = zip targetEnvironmentVariables environmentVariablesResults
 	let environmentVariablesMap = getEnvironmentVariablesMap environmentVariablesList
