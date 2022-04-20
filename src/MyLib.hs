@@ -9,6 +9,8 @@ import Control.Exception (
 
 import Options.Applicative
 import Data.Semigroup ((<>))
+import Data.List (intercalate)
+import System.Directory.Internal.Prelude (exitFailure)
 
 data TestParser = TestParser {
 	configFileName :: String
@@ -26,6 +28,23 @@ nippouGenerator :: IO ()
 nippouGenerator = do
 	greet <- execParser opts
 	print (configFileName greet)
+	appXdgDir <- getXdgDirectory XdgConfig "nippou_generator"
+	print appXdgDir
+	files <- try (listDirectory appXdgDir):: IO (Either SomeException [FilePath])
+	case files of
+		Left error ->  do
+			putStrLn (appXdgDir ++ " configuration directory didn't exist, it will be created")
+			catch (createDirectory appXdgDir) handler
+			where
+				handler :: SomeException -> IO()
+				handler exception = do
+					putStrLn " configuration directory creation failed"
+					exitFailure
+		Right files -> do
+			putStr "files:"
+			print files -- TODO I should probably make this a catch as well
+	let targetFile = appXdgDir ++ configFileName greet
+	print targetFile
 	where
 		opts = info (parser <**> helper)
 			(fullDesc
