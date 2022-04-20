@@ -19,14 +19,17 @@ parser = TestParser
 	<$> strOption
 		(long "templateFileName"
 		<> short 't'
+		<> metavar "TEMPLATE"
 		<> help "path to the template file")
 
 nippouGenerator :: IO ()
-nippouGenerator = greet =<< execParser opts
+nippouGenerator = do
+	greet <- execParser opts
+	print (configFileName greet)
 	where
 		opts = info (parser <**> helper)
 			(fullDesc
-			<> progDesc "interpolate string values into an email template provided in a file"
+			<> progDesc "interpolate string values into an email TEMPLATE provided in a file"
 			<> header "nippou generator - combines templates, data files and selected variables into an email body"
 			)
 
