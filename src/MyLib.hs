@@ -11,6 +11,7 @@ import Options.Applicative
 import Data.Semigroup ((<>))
 import Data.List (intercalate)
 import System.Directory.Internal.Prelude (exitFailure)
+import System.FilePath (combine)
 
 data TestParser = TestParser {
 	configFileName :: String
@@ -43,8 +44,13 @@ nippouGenerator = do
 		Right files -> do
 			putStr "files:"
 			print files -- TODO I should probably make this a catch as well
+	let templateFileName = configFileName greet
 	let targetFile = appXdgDir ++ configFileName greet
-	print targetFile
+	print ("targetFile:" ++ targetFile)
+	--there is a "<\>" operator that I should be able to use, but I can't figure out
+	--how to import it
+	print ("target path:" ++ (appXdgDir `combine` templateFileName))
+	--putStrLn "target file:" ++ targetFile
 	where
 		opts = info (parser <**> helper)
 			(fullDesc

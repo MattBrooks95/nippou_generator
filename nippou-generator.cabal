@@ -35,7 +35,8 @@ library
 		base,
 		containers,
 		optparse-applicative,
-		directory
+		directory,
+		filepath,
 
 	hs-source-dirs: src
 	default-language: Haskell2010
@@ -54,6 +55,7 @@ executable nippou-generator
 		base,
 		directory,
 		nippou-generator,
+		filepath,
 
 	hs-source-dirs: app
 	default-language: Haskell2010
