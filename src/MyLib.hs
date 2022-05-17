@@ -45,11 +45,19 @@ nippouGenerator = do
 			putStr "files:"
 			print files -- TODO I should probably make this a catch as well
 	let templateFileName = configFileName greet
+	--note that this will not work, because it does not input the slash
+	--to separate the directories. you need to use combine as below
 	let targetFile = appXdgDir ++ configFileName greet
+	--I guess this is the same thing as usin let
+	--targetFile <- return appXdgDir ++ configFileName greet
 	print ("targetFile:" ++ targetFile)
 	--there is a "<\>" operator that I should be able to use, but I can't figure out
 	--how to import it
-	print ("target path:" ++ (appXdgDir `combine` templateFileName))
+	let targetFilePath = appXdgDir `combine` templateFileName
+	print ("target path:" ++ targetFilePath)
+	--print ("target path:" ++ (appXdgDir `combine` templateFileName))
+	fileContents <- readFile targetFilePath
+	print fileContents
 	--putStrLn "target file:" ++ targetFile
 	where
 		opts = info (parser <**> helper)
@@ -58,9 +66,9 @@ nippouGenerator = do
 			<> header "nippou generator - combines templates, data files and selected variables into an email body"
 			)
 
-greet :: TestParser -> IO ()
-greet (TestParser h) = putStrLn $ "template file name: " ++ h 
-greet _ = return ()
+--greet :: TestParser -> IO ()
+--greet (TestParser h) = putStrLn $ "template file name: " ++ h 
+--greet _ = return ()
 --nippouGenerator = do
 	--config <- getConfiguration
 	--print config
