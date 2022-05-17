@@ -14,7 +14,8 @@ import System.Directory.Internal.Prelude (exitFailure)
 import System.FilePath (combine)
 
 data TestParser = TestParser {
-	configFileName :: String
+	templateFileName :: String,
+	contentFileName :: String
 }
 
 parser :: Parser TestParser
@@ -23,12 +24,18 @@ parser = TestParser
 		(long "templateFileName"
 		<> short 't'
 		<> metavar "TEMPLATE"
-		<> help "path to the template file")
+		<> help "name of the template file in the config directory to use")
+	<*> strOption
+		(long "contentFileName"
+		<> short 'c'
+		<> metavar "CONTENT"
+		<> help "path to content that needs to be placed into the template")
 
 nippouGenerator :: IO ()
 nippouGenerator = do
 	greet <- execParser opts
-	print (configFileName greet)
+	print (templateFileName greet)
+	print (contentFileName greet)
 	appXdgDir <- getXdgDirectory XdgConfig "nippou_generator"
 	print appXdgDir
 	files <- try (listDirectory appXdgDir):: IO (Either SomeException [FilePath])
@@ -44,21 +51,22 @@ nippouGenerator = do
 		Right files -> do
 			putStr "files:"
 			print files -- TODO I should probably make this a catch as well
-	let templateFileName = configFileName greet
-	--note that this will not work, because it does not input the slash
-	--to separate the directories. you need to use combine as below
-	let targetFile = appXdgDir ++ configFileName greet
+	--let templateFileName = templateFileName greet
+	----let contentFileName = contentFileName greet
+	----note that this will not work, because it does not input the slash
+	----to separate the directories. you need to use combine as below
+	let targetFile = appXdgDir ++ templateFileName greet
 	--I guess this is the same thing as usin let
 	--targetFile <- return appXdgDir ++ configFileName greet
 	print ("targetFile:" ++ targetFile)
 	--there is a "<\>" operator that I should be able to use, but I can't figure out
 	--how to import it
-	let targetFilePath = appXdgDir `combine` templateFileName
-	print ("target path:" ++ targetFilePath)
-	--print ("target path:" ++ (appXdgDir `combine` templateFileName))
-	fileContents <- readFile targetFilePath
-	print fileContents
-	--putStrLn "target file:" ++ targetFile
+	--let targetFilePath = appXdgDir `combine` templateFileName
+	--print ("target path:" ++ targetFilePath)
+	----print ("target path:" ++ (appXdgDir `combine` templateFileName))
+	--fileContents <- readFile targetFilePath
+	--print fileContents
+	----putStrLn "target file:" ++ targetFile
 	where
 		opts = info (parser <**> helper)
 			(fullDesc
