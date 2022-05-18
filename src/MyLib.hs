@@ -11,7 +11,7 @@ import Options.Applicative
 import Data.Semigroup ((<>))
 import Data.List (intercalate)
 import System.Directory.Internal.Prelude (exitFailure)
-import System.FilePath (combine)
+import System.FilePath (combine, isRelative)
 
 data TestParser = TestParser {
 	templateFileName :: String,
@@ -65,6 +65,13 @@ nippouGenerator = do
 	-- we can use pattern matching in an assignment, though, which I did not know
 	let TestParser { contentFilePath = c } = greet
 	print ("content file path:" ++ c)
+	print ("is relative?"  ++ show (isRelative c))
+	contentFileContents <- readFile c
+	--this prints out Japanese text as the utf-8 escape code and not the character itself
+	--for example, it could print:
+	--"content file contentsThis is the email body contents file.\n\12371\12428\12399\12513\12540\12523\12398\26412\25991\12501\12449\12452\12523\12391\12377\12290\n"
+	-- (-_-)
+	print ("content file contents" ++ contentFileContents)
 	--there is a "<\>" operator that I should be able to use, but I can't figure out
 	--how to import it
 	--let targetFilePath = appXdgDir `combine` templateFileName
