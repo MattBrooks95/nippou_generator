@@ -12,6 +12,7 @@ import Data.Semigroup ((<>))
 import Data.List (intercalate)
 import System.Directory.Internal.Prelude (exitFailure)
 import System.FilePath (combine, isRelative)
+import Text.Show.Unicode (ushow)
 
 data TestParser = TestParser {
 	templateFileName :: String,
@@ -72,6 +73,7 @@ nippouGenerator = do
 	--"content file contentsThis is the email body contents file.\n\12371\12428\12399\12513\12540\12523\12398\26412\25991\12501\12449\12452\12523\12391\12377\12290\n"
 	-- (-_-)
 	print ("content file contents" ++ contentFileContents)
+	putStrLn (ushow ("content file contents" ++ contentFileContents))
 	--there is a "<\>" operator that I should be able to use, but I can't figure out
 	--how to import it
 	--let targetFilePath = appXdgDir `combine` templateFileName
