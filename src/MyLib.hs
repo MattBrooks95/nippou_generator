@@ -15,7 +15,7 @@ import System.FilePath (combine)
 
 data TestParser = TestParser {
 	templateFileName :: String,
-	contentFileName :: String
+	contentFilePath :: String
 }
 
 parser :: Parser TestParser
@@ -26,7 +26,7 @@ parser = TestParser
 		<> metavar "TEMPLATE"
 		<> help "name of the template file in the config directory to use")
 	<*> strOption
-		(long "contentFileName"
+		(long "contentFilePath"
 		<> short 'c'
 		<> metavar "CONTENT"
 		<> help "path to content that needs to be placed into the template")
@@ -35,7 +35,7 @@ nippouGenerator :: IO ()
 nippouGenerator = do
 	greet <- execParser opts
 	print (templateFileName greet)
-	print (contentFileName greet)
+	print (contentFilePath greet)
 	appXdgDir <- getXdgDirectory XdgConfig "nippou_generator"
 	print appXdgDir
 	files <- try (listDirectory appXdgDir):: IO (Either SomeException [FilePath])
@@ -55,10 +55,16 @@ nippouGenerator = do
 	----let contentFileName = contentFileName greet
 	----note that this will not work, because it does not input the slash
 	----to separate the directories. you need to use combine as below
-	let targetFile = appXdgDir `combine` templateFileName greet
+	let templateFilePath = appXdgDir `combine` templateFileName greet
 	--I guess this is the same thing as usin let
 	--targetFile <- return appXdgDir ++ configFileName greet
-	print ("targetFile:" ++ targetFile)
+	print ("template file path:" ++ templateFilePath)
+	-- contentFilePath = (contentFilePath greet) will not work, because the let binding's
+	-- name clashes with the accessor function for the TestParser record type,
+	-- and to disambiguate it requires turning on language extensions
+	-- we can use pattern matching in an assignment, though, which I did not know
+	let TestParser { contentFilePath = c } = greet
+	print ("content file path:" ++ c)
 	--there is a "<\>" operator that I should be able to use, but I can't figure out
 	--how to import it
 	--let targetFilePath = appXdgDir `combine` templateFileName
