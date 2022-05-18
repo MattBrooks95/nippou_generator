@@ -55,7 +55,7 @@ nippouGenerator = do
 	----let contentFileName = contentFileName greet
 	----note that this will not work, because it does not input the slash
 	----to separate the directories. you need to use combine as below
-	let targetFile = appXdgDir ++ templateFileName greet
+	let targetFile = appXdgDir `combine` templateFileName greet
 	--I guess this is the same thing as usin let
 	--targetFile <- return appXdgDir ++ configFileName greet
 	print ("targetFile:" ++ targetFile)
